@@ -15,6 +15,7 @@
 	let canvas: HTMLCanvasElement;
 	let ctx: Context;
 	let __s = 50;
+	const GRID_COLOR = '#d1d5db';
 
 	function new_game(): g.Game {
 		return new g.Game({ rows, cols });
@@ -23,7 +24,7 @@
 	let game = new_game();
 
 	function draw_line(x1, y1, x2, y2) {
-		ctx.strokeStyle = 'red';
+		ctx.strokeStyle = GRID_COLOR;
 		ctx.lineWidth = 1;
 		ctx.beginPath();
 		ctx.moveTo(x1, y1);
@@ -69,6 +70,8 @@
 				let [start, end] = get_box(i, j);
 				let center = [Math.round((start[0] + end[0]) / 2), Math.round((end[1] + start[1]) / 2)];
 				ctx.fillStyle = u.player_colors[cell.player];
+				ctx.textAlign = 'center';
+				ctx.font = '16px Monospace';
 				ctx.fillText(`o`.repeat(cell.balls.length), center[0], center[1]);
 			});
 		});
@@ -125,7 +128,7 @@
 <canvas
 	bind:this={canvas}
 	on:click={handle_click}
-	class="border border-red-500"
+	class="border border-[{GRID_COLOR}]"
 	width={canvas_width}
 	height={canvas_height}
 />
