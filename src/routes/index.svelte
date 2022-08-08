@@ -4,8 +4,8 @@
 	import * as u from '$lib/utils';
 	import { quintOut } from 'svelte/easing';
 
-	const width: number = 6;
-	const height: number = 5;
+	const width: number = 10;
+	const height: number = 10;
 
 	import { crossfade } from 'svelte/transition';
 	let [send, recieve] = crossfade({
@@ -86,14 +86,15 @@
 			}
 		}
 		let blast_remaining = false;
-		grid.forEach((row, i) => {
-			row.forEach((cell, j) => {
-				if (cell.balls.length > get_max_allowed_balls(i, j)) {
-					blast_remaining = true;
-				}
+		if (!has_won()) {
+			grid.forEach((row, i) => {
+				row.forEach((cell, j) => {
+					if (cell.balls.length > get_max_allowed_balls(i, j)) {
+						blast_remaining = true;
+					}
+				});
 			});
-		});
-
+		}
 		game = game;
 		if (blast_remaining) {
 			await new Promise((r) => {
@@ -103,6 +104,24 @@
 				}, delay);
 			});
 		}
+	}
+	function has_won(): boolean {
+		console.log('Checking won');
+		let won = true;
+		// console.log('Won', won, game.curr_player, game.turn);
+		if (game.turn == 0) {
+			console.log('game turn 0');
+			return false;
+		}
+		grid.forEach((row, i) => {
+			row.forEach((box, j) => {
+				if (box.balls.length != 0 && box.player != game.curr_player) {
+					won = false;
+				}
+			});
+		});
+		console.log('Won', won, game.curr_player, game.turn);
+		return won;
 	}
 
 	async function handle_click(i: number, j: number) {
@@ -119,17 +138,11 @@
 
 		blasting = true;
 		await blast();
-		let won = true;
 		blasting = false;
 
-		grid.forEach((row, i) => {
-			row.forEach((box, j) => {
-				if (box.balls.length != 0 && box.player != game.curr_player) {
-					won = false;
-				}
-			});
-		});
-		if (game.turn > 0 && won) {
+		let won = has_won();
+
+		if (won) {
 			alert(`player ${game.curr_player} won`);
 			game = new_game();
 			return;
@@ -143,8 +156,30 @@
 		game = game;
 		// TODO: Execute Blast
 	}
+	// u.
 </script>
 
+<button
+	on:click={() => {
+		grid.forEach((row, i) => {
+			row.forEach((box, j) => {
+				let max_balls = get_max_allowed_balls(i, j);
+				let player = Math.floor(Math.random() * 2);
+				console.log(row, j);
+				while (row[j].balls.length < max_balls) {
+					row[j].balls.push(new_ball());
+				}
+				row[j].player = player;
+				// row[j] = {
+				// 	balls: Array(max_balls).map(() => new_ball()),
+				// 	player: player
+				// };
+			});
+		});
+		game.turn = 2;
+		grid = grid;
+	}}>Populate</button
+>
 <div class="shadow {u.get_player_shadow_class(game.curr_player)} shadow-lg">
 	<div class="select-none">
 		{#each grid as row, i (i)}
