@@ -1,8 +1,7 @@
 export const player_colors: { [key: string]: string } = {
 	null: 'white',
-	0: 'blue',
-	1: 'green',
-	2: 'blue'
+	0: '#5c9ae6',
+	1: '#e65c73',
 };
 
 

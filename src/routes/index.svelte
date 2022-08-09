@@ -60,7 +60,7 @@
 		let new_ball = game.tap(row, col);
 		function update_cell(i, j) {
 			let elm = stage.findOne<Konva.Text>('#' + Id.text(i, j));
-			elm.text(`o`.repeat(game.grid[i][j].balls.length));
+			elm.text(`0`.repeat(game.grid[i][j].balls.length));
 			elm.fill(u.player_colors[game.grid[i][j].player]);
 		}
 		if (new_ball == null) {
@@ -76,20 +76,29 @@
 			for (const move of res.moves) {
 				let [pi, pj] = move.prev_pos;
 				let [ni, nj] = move.next_pos;
-				update_cell(pi, pj);
 
 				let [ci, cj] = get_box_center(pi, pj);
 				let [ti, tj] = get_box_center(ni, nj);
-				let dummy_ball = new Konva.Circle({ x: ci, y: cj, radius: 3, fill: 'black' });
+				let dummy_ball = new Konva.Circle({
+					x: ci,
+					y: cj,
+					radius: 5,
+					// fill: '#9e80e0',
+					fill: u.player_colors[game.curr_player],
+					opacity: 0.1
+				});
 				layer.add(dummy_ball);
 				tweens.push(
 					new Konva.Tween({
+						duration: 0.2,
+						easing: Konva.Easings.EaseIn,
 						node: dummy_ball,
 						x: ti,
 						y: tj,
-						opacity: 0
+						opacity: 0.4
 					})
 				);
+				update_cell(pi, pj);
 			}
 			for (const t of tweens) {
 				t.play();
@@ -144,7 +153,8 @@
 					verticalAlign: 'middle',
 					height: canvas_height / rows,
 					width: canvas_width / cols,
-					fontSize: 16
+					fontSize: 20,
+					letterSpacing: 3
 				});
 
 				group.add(text);
