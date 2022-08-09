@@ -6,7 +6,6 @@
 	import * as u from '$lib/utils';
 	import * as g from '$lib/game_utils';
 	import Box from '$lib/Box.svelte';
-	import { Tween } from 'konva/lib/Tween';
 	const GRID_COLOR = '#d1d5db';
 
 	class Id {
@@ -84,7 +83,7 @@
 				let dummy_ball = new Konva.Circle({ x: ci, y: cj, radius: 3, fill: 'black' });
 				layer.add(dummy_ball);
 				tweens.push(
-					new Tween({
+					new Konva.Tween({
 						node: dummy_ball,
 						x: ti,
 						y: tj,
