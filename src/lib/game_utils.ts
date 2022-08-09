@@ -94,7 +94,7 @@ export class Game {
 
 	blast_one(): BlastResult {
 		// returns true if more blasts are left
-		const rows = this.cols()
+		const rows = this.rows()
 		const cols = this.cols()
 		let moves: BallMovement[] = []
 		let old_grid = utils.create_empty_grid(rows, cols, () => ({ balls: [], player: null }));

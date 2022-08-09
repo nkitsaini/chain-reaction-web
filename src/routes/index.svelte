@@ -23,10 +23,10 @@
 	type Context = CanvasRenderingContext2D;
 	type Point = [number, number];
 
-	const canvas_width = 700;
-	const canvas_height = 700;
+	const canvas_width = 250;
+	const canvas_height = 500;
 	const rows = 10;
-	const cols = 10;
+	const cols = 5;
 
 	function new_game(): g.Game {
 		return new g.Game({ rows, cols });
@@ -160,6 +160,7 @@
 				group.add(text);
 				group.add(box);
 				box.on('click', (x) => handle_click(i, j));
+				box.on('touchend', (x) => handle_click(i, j));
 				layer.add(group);
 			}
 		}
