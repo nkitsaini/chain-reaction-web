@@ -1,5 +1,5 @@
 export const player_colors: { [key: string]: string } = {
-	null: 'black',
+	null: 'white',
 	0: 'blue',
 	1: 'green',
 	2: 'blue'

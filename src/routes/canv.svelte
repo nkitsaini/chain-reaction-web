@@ -18,7 +18,9 @@
 	const GRID_COLOR = '#d1d5db';
 
 	function new_game(): g.Game {
-		return new g.Game({ rows, cols });
+		let game = new g.Game({ rows, cols });
+
+		return game;
 	}
 
 	let game = new_game();
@@ -101,11 +103,11 @@
 		let y = event.clientY - canvas.getBoundingClientRect().top;
 		let [row_n, col_n] = box_by_cordinates(x, y);
 
-		if (!game.tap(row_n, col_n)) {
+		if (game.tap(row_n, col_n) == null) {
 			return;
 		}
 		blasting = true;
-		while (game.blast_one()) {
+		while (!game.blast_one().is_finished) {
 			draw();
 			await new Promise((r) => setTimeout(r, 300));
 		}

@@ -11,12 +11,29 @@ const DEFAULT_OPTIONS: GameOptions = {
 	cols: 10,
 	total_players: 2,
 }
-const directions = [
-	[-1, 0],
-	[1, 0],
-	[0, -1],
-	[0, 1]
-];
+type Direction = 'up' | 'down' | 'right' | 'left';
+const DIRECTIONS: Direction[] = ['up', 'down', 'right', 'left'];
+
+function direction_deltas(direction: Direction) {
+	const directions = {
+		up: [-1, 0],
+		down: [1, 0],
+		left: [0, -1],
+		right: [0, 1]
+	};
+	return directions[direction];
+}
+
+export interface BallMovement {
+	ball: m.Ball,
+	prev_pos: [number, number],
+	next_pos: [number, number],
+	direction: Direction
+}
+export interface BlastResult {
+	is_finished: boolean,
+	moves: BallMovement[]
+}
 export class Game {
 	public grid: m.Box[][]
 	public curr_player: number
@@ -29,18 +46,20 @@ export class Game {
 		this.total_players = curr_options.total_players;
 		this.turns = 0;
 	};
-	tap(row: number, col: number): boolean {
+
+	tap(row: number, col: number): null | m.Ball {
 		// Returns if the tap was registered.
 		// Example: False if tapped in a box of other player.
 
 		let box = this.grid[row][col];
 		if (box.player != null && box.player != this.curr_player) {
-			return false;
+			return null;
 		}
 
 		box.player = this.curr_player;
-		box.balls.push({ id: 1 });
-		return true;
+		let ball = { id: 1 }
+		box.balls.push(ball);
+		return ball;
 	}
 
 	next_player() {
@@ -73,10 +92,11 @@ export class Game {
 		return i >= 0 && i <= this.rows() - 1 && j >= 0 && j <= this.cols() - 1;
 	}
 
-	blast_one(): boolean {
+	blast_one(): BlastResult {
 		// returns true if more blasts are left
 		const rows = this.cols()
 		const cols = this.cols()
+		let moves: BallMovement[] = []
 		let old_grid = utils.create_empty_grid(rows, cols, () => ({ balls: [], player: null }));
 		for (const i of Array(rows).keys()) {
 			for (const j of Array(cols).keys()) {
@@ -92,21 +112,17 @@ export class Game {
 				if (this.get_max_allowed_balls(i, j) >= old_grid[i][j].balls.length) {
 					continue;
 				}
-				for (const [di, dj] of directions) {
+				for (const name of DIRECTIONS) {
+					let [di, dj] = direction_deltas(name);
 					let new_i = i + di;
 					let new_j = j + dj;
 					if (!this.is_inside_grid(new_i, new_j)) {
 						continue;
 					}
-					if (old_grid[i][j].balls.length == 0) {
-						this.grid[new_i][new_j].balls.push({ id: 0 });
-					} else {
-						this.grid[new_i][new_j].balls.push(this.grid[i][j].balls.pop());
-						while (this.grid[new_i][new_j].balls.length > this.get_max_allowed_balls(i + di, j + dj) + 1) {
-							this.grid[new_i][new_j].balls.pop();
-						}
-					}
-					this.grid[i][j].player = null;
+					let popped_ball = this.grid[i][j].balls.pop();
+					this.grid[new_i][new_j].balls.push(popped_ball);
+					moves.push({ ball: popped_ball, direction: name, prev_pos: [i, j], next_pos: [new_i, new_j] })
+					this.grid[i][j].player = this.grid[i][j].balls.length == 0 ? null : this.curr_player;
 					this.grid[i + di][j + dj].player = this.curr_player;
 				}
 			}
@@ -121,7 +137,7 @@ export class Game {
 				});
 			});
 		}
-		return blast_remaining;
+		return { is_finished: !blast_remaining, moves };
 	}
 	has_won(): boolean {
 		// console.log('Checking won');
