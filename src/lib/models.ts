@@ -13,3 +13,13 @@ export interface Game {
 	total_players: number;
 	turn: number
 }
+export interface UserOptions {
+	rows?: number,
+	cols?: number,
+	players?: number,
+}
+export const DEFAULT_USER_OPTIONS: UserOptions = {
+	rows: 10,
+	cols: 5,
+	players: 2,
+}
