@@ -114,7 +114,7 @@
 			}
 		}
 		if (game.has_won()) {
-			alert(`Winner: ${game.curr_player + 1}:${u.player_colors[game.curr_player]}`);
+			alert(`Winner is: ${game.curr_player + 1}:${u.player_colors[game.curr_player]}`);
 			stage.destroy();
 			initialize();
 			game = new_game();
