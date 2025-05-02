@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { browser } from '$app/env';
-	import Box from '$lib/Box.svelte';
-	import * as u from '$lib/utils';
+	import Box from "$lib/Box.svelte";
+	import * as u from "$lib/utils";
 
-	import Game from '$lib/Game.svelte';
+	import Game from "$lib/Game.svelte";
+	import { browser } from "$app/environment";
 	let playing = false;
 	let options = {
 		players: 2,
 		rows: 10,
-		cols: 5
+		cols: 5,
 	};
 	let max_players = Object.keys(u.player_colors).length - 1;
 	function changed() {
@@ -38,7 +38,7 @@
 </script>
 
 {#if playing}
-	<div class="flex flex-col justify-center items-center  m-2">
+	<div class="flex flex-col justify-center items-center m-2">
 		<Game
 			canvas_width={get_width()}
 			canvas_height={get_height()}
@@ -96,7 +96,8 @@
 	</form>
 {/if}
 
-<style>
+<style lang="postcss">
+	@reference "tailwindcss";
 	.num_input {
 		@apply block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0;
 	}
