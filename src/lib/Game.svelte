@@ -55,9 +55,22 @@
 	let layer: Konva.Layer;
 	let blasting = false;
 	function update_cell(i, j) {
-		let elm = stage.findOne<Konva.Text>("#" + Id.text(i, j));
-		elm.text(`0`.repeat(game.grid[i][j].balls.length));
-		elm.fill(u.player_colors[game.grid[i][j].player]);
+		let elm = stage.findOne<Konva.Group>("#" + Id.text(i, j))!;
+		elm.removeChildren();
+		// elm?.getChildren()
+		let center = get_box_center(i, j);
+		elm.children = R.range(0, game.grid[i][j].balls.length).map(
+			(x) =>
+				new Konva.Circle({
+					x: center[0],
+					y: center[1],
+					radius: 10,
+					// fill: '#9e80e0',
+					fill: u.player_colors[game.curr_player],
+				}),
+		);
+		// elm.text(`0`.repeat(game.grid[i][j].balls.length));
+		// elm.fill(u.player_colors[game.grid[i][j].player]);
 	}
 
 	function get_box_center(row: number, col: number): Point {
@@ -158,18 +171,18 @@
 					shadowForStrokeEnabled: false,
 				});
 
-				let text = new Konva.Text({
+				let cell = new Konva.Group({
 					id: Id.text(i, j),
-					text: " ",
-					align: "center",
-					verticalAlign: "middle",
+					// text: " ",
+					// align: "center",
+					// verticalAlign: "middle",
 					width: end[0] - start[0],
 					height: end[1] - start[1],
-					fontSize: 20,
-					letterSpacing: 3,
+					// fontSize: 20,
+					// letterSpacing: 3,
 				});
 
-				group.add(text);
+				group.add(cell);
 				group.add(box);
 				box.on("click", (x) => handle_click(i, j));
 				box.on("touchend", (x) => handle_click(i, j));
