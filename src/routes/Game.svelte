@@ -98,13 +98,15 @@
 			<div class="h-6 w-6 rounded-full border" style="border-color: {COLORS[p]}; background-color: color-mix(in oklch, {COLORS[p]}, transparent {p===game.current_player?'0%':'80%'});"></div>
 		{/each}
 	</div>
-	<div class="grid select-none relative m-auto w-full "
+	<div class="grid select-none border-gray-500 rounded  relative m-auto w-full "
 		style = "
 		grid-template-columns: repeat({cols}, 1fr);
 		grid-template-rows: repeat({rows}, 1fr);
-		width: {cols*70}px;
-		height: {rows*70}px;
+		width: {cols*60}px;
+		height: {rows*60}px;
 		justify-content: center;
+		border-right-width: 1px;
+		border-top-width: 1px;
 		">
 		{#each visible_animations as anim (anim.key)}
 			<Tweened
@@ -129,9 +131,11 @@
 					{@const is_current_player=cell.player===game.current_player}
 					{@const is_empty=cell.count===0}
 					{@const color=R.isNullish(cell.player)?COLORS[game.current_player]:COLORS[cell.player]}
-					{@const transparency=is_empty?'80%':(is_current_player?'80%':'90%')}
+					{@const transparency=is_empty?'90%':(is_current_player?'90%':'95%')}
+					<!-- svelte-ignore a11y_click_events_have_key_events -->
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div
-						class="border flex flex-wrap gap-1 justify-center items-center  p-2"
+						class="border-gray-500 flex flex-wrap gap-1 justify-center items-center  p-2"
 						bind:offsetWidth={cell_width}
 						bind:offsetHeight={cell_height}
 						onclick={() => {
@@ -141,6 +145,8 @@
 						height: calc(100%);
 						width: calc(100%);
 						border-radius: 1px;
+						border-left-width: 1px;
+						border-bottom-width: 1px;
 						background-color: color-mix(in oklch, {color}, transparent {transparency});"
 					>
 						{#each R.range(0, cell.count) as _}
