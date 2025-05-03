@@ -92,22 +92,18 @@
 	}
 </script>
 
-<div class=" flex flex-col justify-start items-start  gap-2 p-2 h-[100dvh] w-[100dvw]">
-	<div class="flex justify-center gap-2 w-max m-auto">
+<div class="p-2  w-[100dvw]">
+	<div class="mb-2 flex justify-center gap-2 w-max m-auto">
 		{#each R.range(0, players) as p}
 			<div class="h-6 w-6 rounded-full border" style="border-color: {COLORS[p]}; background-color: color-mix(in oklch, {COLORS[p]}, transparent {p===game.current_player?'0%':'80%'});"></div>
 		{/each}
 	</div>
-	<div class="grow m-auto   max-w-full">
-	<div class="grid select-none relative   w-full "
+	<div class="grid select-none relative m-auto w-full "
 		style = "
 		grid-template-columns: repeat({cols}, 1fr);
 		grid-template-rows: repeat({rows}, 1fr);
-		height: 100%;
-		width: 100%;
-		max-height: 100%;
-		max-width: 100%;
-		aspect-ratio: {cols} /{rows};
+		width: {cols*70}px;
+		height: {rows*70}px;
 		justify-content: center;
 		">
 		{#each visible_animations as anim (anim.key)}
@@ -159,7 +155,6 @@
 				{/each}
 			<!-- </div> -->
 		{/each}
-	</div>
 	</div>
 </div>
 <style lang="postcss">
