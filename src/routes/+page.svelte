@@ -1,107 +1,108 @@
 <script lang="ts">
-	import Box from "$lib/Box.svelte";
-	import * as u from "$lib/utils";
+	import Game from "./Game.svelte";
+	interface GameOptions {
+		rows: number;
+		cols: number;
+		players: number;
+	}
+	let playing = $state(false);
 
-	import Game from "$lib/Game.svelte";
-	import { browser } from "$app/environment";
-	let playing = false;
-	let options = {
-		players: 2,
-		rows: 10,
-		cols: 5,
-	};
-	let max_players = Object.keys(u.player_colors).length - 1;
-	function changed() {
-		options = options;
+	let form = $state({ rows: "10", cols: "5", players: "2" });
+	function parse_form() {
+		if (
+			Number(form.rows) >= 2 &&
+			Number(form.rows) <= 25 &&
+			Number(form.cols) >= 2 &&
+			Number(form.cols) <= 25 &&
+			Number(form.players) >= 2 &&
+			Number(form.players) <= 6
+		) {
+			return {
+				rows: Number(form.rows),
+				cols: Number(form.cols),
+				players: Number(form.players),
+			};
+		}
+		return null;
 	}
-	function _options_valid(options) {
-		return (
-			2 <= options.players &&
-			options.players <= max_players &&
-			options.rows >= 5 &&
-			options.cols >= 5
-		);
+	let parsed_form = $derived(parse_form());
+	function play() {
+		if (parsed_form) {
+			playing = true;
+		}
 	}
-	$: height = browser ? window.innerHeight - 15 : 50;
-	$: width = browser ? window.innerWidth - 15 : 50;
-	function box_size() {
-		let w = width / options.cols;
-		let h = height / options.rows;
-		return Math.round(Math.min(w, h));
-	}
-	function get_height() {
-		return box_size() * options.rows;
-	}
-	function get_width() {
-		return box_size() * options.cols;
-	}
+
+	let board;
 </script>
 
 {#if playing}
-	<div class="flex flex-col justify-center items-center m-2">
-		<Game
-			canvas_width={get_width()}
-			canvas_height={get_height()}
-			players={options.players}
-			rows={options.rows}
-			cols={options.cols}
-		/>
+	<Game
+		players={parsed_form.players}
+		rows={parsed_form.rows}
+		cols={parsed_form.cols}
+	/>
+	<div class="w-screen flex justify-center">
 		<button
-			on:click={() => {
-				window.location.reload();
-			}}>Reset</button
+			onclick={() => {
+				playing = false;
+			}}
+			class="m-auto btn btn-secondary btn-outline w-max"
+		>
+			Reset</button
 		>
 	</div>
 {:else}
-	<form class="max-w-[150px] p-3">
+	<div class="p-5 w-screen flex flex-col gap-5 items-center">
+		<h1 class="text-4xl text-green-800">Chain Reaction</h1>
 		<label>
-			Players(2-7): <input
-				class="num_input"
+			<span class="label">Players</span>
+			<br />
+			<input
 				type="number"
 				min="2"
-				max={max_players}
-				bind:value={options.players}
-				on:change={changed}
+				max="6"
+				bind:value={form.players}
+				class="input validator input-lg min-w-[300px]"
 			/>
+			<div class="validator-hint">
+				A valid number in range of 2 and 6 expected
+			</div>
 		</label>
-		<br />
 		<label>
-			Rows(min 5): <input
-				class="num_input"
+			<span class="label">Rows</span>
+			<br />
+			<input
 				type="number"
-				min="5"
-				bind:value={options.rows}
-				on:change={changed}
+				min="2"
+				max="25"
+				bind:value={form.rows}
+				class="input input-lg validator min-w-[300px]"
 			/>
+			<div class="validator-hint">
+				A valid number in range of 2 and 25 expected
+			</div>
 		</label>
-		<br />
 		<label>
-			Columns(min 5): <input
-				class="num_input"
+			<span class="label">Columns</span>
+			<br />
+			<input
 				type="number"
-				min="5"
-				bind:value={options.cols}
-				on:change={changed}
+				min="2"
+				max="25"
+				bind:value={form.cols}
+				class="input input-lg validator min-w-[300px]"
 			/>
+			<div class="validator-hint">
+				A valid number in range of 2 and 25 expected
+			</div>
 		</label>
-		<br />
-		<input
-			type="submit"
-			class="bg-blue-500 px-3 py-1 rounded text-gray-100 disabled:bg-gray-500"
-			disabled={!_options_valid(options)}
-			on:click={() => {
-				playing = true;
+		<button
+			class="btn btn-outline btn-secondary btn-lg"
+			onclick={() => {
+				play();
 			}}
-		/>
-	</form>
+		>
+			Play
+		</button>
+	</div>
 {/if}
-
-<style lang="postcss">
-	@reference "tailwindcss";
-	.num_input {
-		@apply block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0;
-	}
-	.num_input:focus {
-		@apply text-gray-700 bg-white border-blue-600 outline-none;
-	}
-</style>
