@@ -72,14 +72,15 @@
 			// wait for animation
 			await new Promise((r) => setTimeout(r, animation_duration));
 			game.apply_blast(active_blast);
+			let winner = game.winner()
+			if (winner !== null) {
+				active_blast = null;
+				alert(`Player ${winner+1} won.`)
+				game = new GameBoard(rows, cols, players);
+			}
 			active_blast = game.calculate_blast();
 		}
-		let winner = game.winner()
 		console.log("========== winner", winner)
-		if (winner !== null) {
-			alert(`Player ${winner+1} won.`)
-			game = new GameBoard(rows, cols, players);
-		}
 	}
 
 	function get_cell_center(
